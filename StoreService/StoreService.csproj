@@ -18,9 +18,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\" />
     <Folder Include="Controllers\" />
   </ItemGroup>
 

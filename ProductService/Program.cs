@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ProductService.AsyncDataService;
 using ProductService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMemory"));
 
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,12 +25,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+PrepDb.PrepPopulation(app);
+
 app.Run();
 
-PrepDb.PrepPopulation(app);

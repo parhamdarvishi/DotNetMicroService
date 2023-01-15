@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StoreService.AsyncDataServices;
 using StoreService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InM"));
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHostedService<MessageBusSubscriber>();
 
 var app = builder.Build();
 
@@ -18,7 +21,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+PrepData.PrepPopulation(app);
+
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

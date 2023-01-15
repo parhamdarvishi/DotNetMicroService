@@ -1,4 +1,5 @@
 using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +22,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//ocelot
+await app.UseOcelot();
 
 app.Run();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ProductService.AsyncDataService;
 using ProductService.Data;
 using ProductService.Dtos;
 using ProductService.Models;
@@ -12,15 +13,13 @@ namespace ProductService.Controllers
     {
         private readonly IProductRepo _repo;
         private readonly IMapper _mapper;
-        public ProductController(IProductRepo repo, IMapper mapper)
+        private readonly IMessageBusClient _messageBusClient;
+
+        public ProductController(IProductRepo repo, IMapper mapper, IMessageBusClient messageBusClient)
         {
             _mapper = mapper;
             _repo = repo;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _messageBusClient = messageBusClient;
         }
 
         [Route("GetAllProducts")]
@@ -45,7 +44,19 @@ namespace ProductService.Controllers
             _repo.CreateProduct(product:product);
             _repo.SaveChanges();
 
-            var productReadDto = _mapper.Map<ProductReadDto>(productCreateDto);
+            var productReadDto = _mapper.Map<ProductReadDto>(product);
+
+            //Send Async Message
+            try
+            {
+                var productPublishedDto = _mapper.Map<ProductPublishedDto>(productReadDto);
+                productPublishedDto.Event = "Product_Published";
+                _messageBusClient.PublishNewProduct(productPublishedDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not send asynchronously: {ex.Message}");
+            }
 
             return CreatedAtRoute(nameof(GetProductById), new { Id = productReadDto.Id }, productReadDto);
         }

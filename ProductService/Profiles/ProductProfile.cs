@@ -11,6 +11,7 @@ namespace ProductService.Profiles
             CreateMap<Product, ProductReadDto>();
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductEditDto, Product>();
+            CreateMap<ProductReadDto, ProductPublishedDto>();
         }
     }
 }
